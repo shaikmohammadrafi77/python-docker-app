@@ -11,4 +11,4 @@ COPY . .
 EXPOSE 5000
 # 6. Run the application 
 # NOTE: Change "app.py" to your actual main python file name if it's different
-CMD ["python", "app.run"]
+CMD ["python", "app.py"]
