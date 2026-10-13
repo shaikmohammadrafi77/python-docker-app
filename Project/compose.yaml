@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  python-app:
+    build: .  # Builds using the Dockerfile we just made
+      container_name: my_python_web
+        ports:
+          - "5000:5000"  # Maps port 5000. If your app uses 8000, change to "8000:8000"
+    volumes:
+      - .:/app
+      - ./app.db:/app/app.db
+    

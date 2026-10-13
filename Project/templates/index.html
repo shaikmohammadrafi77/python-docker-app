@@ -1,0 +1,3042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐛 E-Bug-Tracker-AI | Intelligent Bug Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
+        /* Splash Screen Styles */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+        
+        .splash-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .splash-logo {
+            font-size: 120px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        .splash-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .splash-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            width: 100%;
+            height: 100%;
+            background: white;
+            animation: loading 8s linear;
+            transform-origin: left;
+        }
+        
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            position: relative;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Enhanced Watermark Background */
+        .watermark-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.08;
+        }
+        
+        .watermark-logo {
+            position: absolute;
+            font-size: 140px;
+            font-weight: 900;
+            white-space: nowrap;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            transform: rotate(-30deg);
+        }
+        
+        .watermark-text {
+            position: absolute;
+            font-size: 120px;
+            font-weight: 800;
+            white-space: nowrap;
+            opacity: 0.8;
+        }
+        
+        .watermark-bug {
+            position: absolute;
+            font-size: 180px;
+            opacity: 0.1;
+        }
+        
+        .watermark-1 {
+            top: 8%;
+            left: 3%;
+            transform: rotate(-25deg);
+            color: #e74c3c;
+            font-size: 130px;
+        }
+        
+        .watermark-2 {
+            top: 32%;
+            left: 68%;
+            transform: rotate(18deg);
+            color: #3498db;
+            font-size: 125px;
+        }
+        
+        .watermark-3 {
+            top: 62%;
+            left: 5%;
+            transform: rotate(-12deg);
+            color: #2ecc71;
+            font-size: 145px;
+        }
+        
+        .watermark-4 {
+            top: 18%;
+            left: 78%;
+            transform: rotate(22deg);
+            color: #f39c12;
+            font-size: 115px;
+        }
+        
+        .watermark-5 {
+            top: 58%;
+            left: 72%;
+            transform: rotate(28deg);
+            color: #9b59b6;
+            font-size: 135px;
+        }
+        
+        .watermark-6 {
+            top: 78%;
+            left: 35%;
+            transform: rotate(-18deg);
+            color: #1abc9c;
+            font-size: 128px;
+        }
+        
+        .watermark-7 {
+            top: 42%;
+            left: 22%;
+            transform: rotate(8deg);
+            color: #e67e22;
+            font-size: 140px;
+        }
+        
+        .watermark-8 {
+            top: 15%;
+            left: 45%;
+            font-size: 160px;
+            color: #e74c3c;
+            transform: rotate(5deg);
+        }
+        
+        .watermark-9 {
+            top: 75%;
+            left: 60%;
+            font-size: 150px;
+            color: #3498db;
+            transform: rotate(-8deg);
+        }
+        
+        .watermark-10 {
+            top: 35%;
+            left: 55%;
+            font-size: 170px;
+            color: #2ecc71;
+            transform: rotate(15deg);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #2c3e50 !important;
+        }
+        
+        .navbar-brand i {
+            color: #e74c3c;
+            font-size: 2rem;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary) 0%, #1a252f 100%);
+            color: white;
+            min-height: calc(100vh - 76px);
+            position: sticky;
+            top: 76px;
+            padding-top: 20px;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 14px 20px;
+            margin: 6px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            transform: translateX(8px);
+        }
+
+        /* Sky-blue special hover for AI FEATURES items */
+        .sidebar .nav-link.ai-item:hover,
+        .sidebar .nav-link.ai-item.active {
+            background: linear-gradient(45deg, #36a2eb, #1f78c1);
+            box-shadow: 0 6px 18px rgba(31, 120, 193, 0.35);
+            color: #fff;
+            transform: translateX(8px);
+        }
+        
+        .sidebar .nav-link i {
+            width: 28px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* Consistent hover effect */
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            transform: translateX(8px);
+        }
+        
+        .main-content {
+            padding: 16px 20px 0 20px;
+            position: relative;
+            z-index: 1;
+            min-height: calc(100vh - 76px);
+            overflow-x: hidden;
+        }
+        /* Remove extra blank space at the bottom */
+        .main-content { padding-bottom: 0; }
+        .main-content > *:last-child { margin-bottom: 0; }
+        .content-card:last-child { margin-bottom: 0; }
+        
+        .page-title {
+            color: #2c3e50;
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .content-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 16px 18px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            height: 100%;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+            border-bottom: 3px solid var(--light);
+            padding-bottom: 12px;
+            font-size: 1.3rem;
+        }
+        
+        .bug-item {
+            border-left: 5px solid var(--warning);
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+        
+        .bug-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .bug-high {
+            border-left-color: var(--danger);
+        }
+        
+        .bug-medium {
+            border-left-color: var(--warning);
+        }
+        
+        .bug-low {
+            border-left-color: var(--success);
+        }
+        
+        .ai-badge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .footer {
+            background: linear-gradient(180deg, var(--primary) 0%, #1a252f 100%);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hide main content initially */
+        .main-content-area {
+            display: none;
+        }
+        
+        /* Bug Report Modal Styles */
+        .bug-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .priority-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .priority-critical { background-color: #c0392b; }
+        .priority-high { background-color: #e74c3c; }
+        .priority-medium { background-color: #f39c12; }
+        .priority-low { background-color: #2ecc71; }
+        
+        .bug-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-open { background-color: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+        .status-resolved { background-color: #e8f5e9; color: #388e3c; }
+        .status-closed { background-color: #f5f5f5; color: #616161; }
+        
+        /* AI Prediction Styles */
+        .ai-prediction {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .ai-confidence {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Zero Bugs State */
+        .zero-bugs-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .zero-bugs-icon {
+            font-size: 80px;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+        
+        .clean-system-badge {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .stat-card-success {
+            border-left: 4px solid #2ecc71;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .login-watermark .wm-content {
+            text-align: center;
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .login-watermark .wm-logo {
+            font-size: 120px;
+            line-height: 1;
+        }
+
+        .login-watermark .wm-text {
+            font-size: 48px;
+            letter-spacing: 2px;
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .demo-accounts {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .demo-account {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #6c757d;
+        }
+
+        /* Tab Styles */
+        .nav-tabs {
+            border-bottom: 3px solid #e9ecef;
+            margin-bottom: 25px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: var(--primary);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border: none;
+            border-bottom: 3px solid var(--secondary);
+            font-weight: 700;
+        }
+        
+        .tab-pane {
+            padding: 0;
+        }
+        
+        /* Smooth fade transition for tabs */
+        .tab-content > .tab-pane {
+            display: block;
+            height: 0;
+            opacity: 0;
+            visibility: hidden;
+            margin-bottom: 20px;
+            transition: opacity 0.3s ease;
+        }
+        
+        .tab-content > .active {
+            height: auto;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Bug List Styles */
+        .bug-list-item {
+            border-left: 4px solid var(--warning);
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .bug-list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .bug-list-item.critical {
+            border-left-color: var(--danger);
+        }
+        
+        .bug-list-item.high {
+            border-left-color: #e74c3c;
+        }
+        
+        .bug-list-item.medium {
+            border-left-color: var(--warning);
+        }
+        
+        .bug-list-item.low {
+            border-left-color: var(--success);
+        }
+
+        /* Role-specific colors */
+        .text-purple { color: #9b59b6 !important; }
+        .text-orange { color: #e67e22 !important; }
+        .btn-outline-purple { 
+            border-color: #9b59b6; 
+            color: #9b59b6;
+        }
+        .btn-outline-purple:hover {
+            background-color: #9b59b6;
+            color: white;
+        }
+        .btn-outline-orange { 
+            border-color: #e67e22; 
+            color: #e67e22;
+        }
+        .btn-outline-orange:hover {
+            background-color: #e67e22;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">🐛</div>
+            <h1 class="splash-title">E-Bug-Tracker-AI</h1>
+            <p class="splash-subtitle">Intelligent Bug Management System</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen (Initially Hidden) -->
+    <div id="login-screen" style="display: none;">
+        <div class="login-container">
+            <div class="login-watermark">
+                <div class="wm-content">
+                    <div class="wm-logo">🐛</div>
+                    <div class="wm-text">E-BUG TRACKER AI</div>
+                </div>
+            </div>
+            <div class="login-form">
+                <div class="text-center mb-4">
+                    <i class="fas fa-bug fa-3x text-primary mb-3"></i>
+                    <h2 class="login-title">E-Bug-Tracker-AI</h2>
+                    <p class="text-muted">Intelligent Bug Management System</p>
+                </div>
+
+                <div id="login-messages"></div>
+
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Select Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">Choose your role</option>
+                            <option value="admin">Administrator</option>
+                            <option value="tester">Tester</option>
+                            <option value="developer">Developer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login / Register
+                    </button>
+                </form>
+
+                <!-- Demo accounts removed -->
+
+                <!-- Informational Tabs on Login -->
+                <div class="mt-4">
+                    <ul class="nav nav-tabs" id="loginInfoTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-what-tab" data-bs-toggle="tab" data-bs-target="#login-what" type="button" role="tab" aria-controls="login-what" aria-selected="true">
+                                <i class="fas fa-circle-question me-2"></i>What is E-Bug Tracker?
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="login-use-tab" data-bs-toggle="tab" data-bs-target="#login-use" type="button" role="tab" aria-controls="login-use" aria-selected="false">
+                                <i class="fas fa-industry me-2"></i>Usefulness in Industry
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="login-ai-tab" data-bs-toggle="tab" data-bs-target="#login-ai" type="button" role="tab" aria-controls="login-ai" aria-selected="false">
+                                <i class="fas fa-robot me-2"></i>The Role of AI
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="loginInfoTabsContent">
+                        <div class="tab-pane fade show active" id="login-what" role="tabpanel" aria-labelledby="login-what-tab">
+                            <div class="info-section mt-2">
+                                <p class="mb-2"><strong>E-Bug Tracker</strong> is a centralized, role-based system for managing software defects across the development lifecycle. It replaces disjointed methods like spreadsheets and emails by tracking issues from initial report to final resolution.</p>
+                                <ul class="mb-0">
+                                    <li><strong>Improved communication</strong> between Developers, Testers, and Admins</li>
+                                    <li><strong>Streamlined workflows</strong> with clear ownership and status tracking</li>
+                                    <li><strong>Data-driven decisions</strong> via analytics and historical insights</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="login-use" role="tabpanel" aria-labelledby="login-use-tab">
+                            <div class="info-section mt-2">
+                                <p class="mb-2">In the software industry—especially Agile—bug tracking is critical to quality and delivery speed.</p>
+                                <ul class="mb-0">
+                                    <li><strong>Enhanced Communication</strong>: one hub for Developers, QA, and Product Managers</li>
+                                    <li><strong>Early Bug Detection</strong>: fix issues earlier to reduce risk and cost</li>
+                                    <li><strong>Strategic Tool</strong>: enables faster iteration and better user experiences</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="login-ai" role="tabpanel" aria-labelledby="login-ai-tab">
+                            <div class="info-section mt-2">
+                                <p class="mb-2">AI transforms bug tracking from reactive to proactive.</p>
+                                <ul class="mb-0">
+                                    <li><strong>AI-Driven Detection</strong>: analyze logs, code, and tests to flag anomalies</li>
+                                    <li><strong>Predictive Analysis</strong>: identify bug-prone areas from historical data</li>
+                                    <li><strong>Automated Triage</strong>: NLP classifies severity and tags reports</li>
+                                    <li><strong>Duplicate Detection</strong>: suggests similar reports to avoid redundancy</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bug Report Modal -->
+    <div class="modal fade" id="bugReportModal" tabindex="-1" aria-labelledby="bugReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bug-modal-header">
+                    <h5 class="modal-title" id="bugReportModalLabel">
+                        <i class="fas fa-bug me-2"></i>Report New Bug
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- AI Prediction Section -->
+                    <div class="ai-prediction">
+                        <h6><i class="fas fa-robot me-2"></i>AI Prediction</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-indicator priority-low"></span>
+                                <strong>No Active Bugs Detected</strong>
+                            </div>
+                            <span class="ai-confidence">Status: Clean</span>
+                        </div>
+                        <small class="d-block mt-2">Your system currently has 0 active bugs. Great job maintaining code quality!</small>
+                    </div>
+                    
+                    <form id="bugReportForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bugTitle" class="form-label">Bug Title</label>
+                                <input type="text" class="form-control" id="bugTitle" placeholder="Brief description of the issue" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="bugSeverity" class="form-label">Severity</label>
+                                <select class="form-select" id="bugSeverity" required>
+                                    <option value="">Select severity</option>
+                                    <option value="critical">Critical</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bugDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="bugDescription" rows="4" placeholder="Detailed description of the bug, steps to reproduce, expected vs actual behavior..." required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bugComponent" class="form-label">Affected Component</label>
+                                <select class="form-select" id="bugComponent" required>
+                                    <option value="">Select component</option>
+                                    <option value="frontend">Frontend</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="database">Database</option>
+                                    <option value="api">API</option>
+                                    <option value="mobile">Mobile App</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="bugAssignee" class="form-label">Assign To</label>
+                                <select class="form-select" id="bugAssignee">
+                                    <option value="">Auto-assign (AI Recommended)</option>
+                                    <option value="dev-a">Developer A</option>
+                                    <option value="dev-b">Developer B</option>
+                                    <option value="dev-c">Developer C</option>
+                                    <option value="qa">QA Team</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bugAttachments" class="form-label">Attachments</label>
+                            <input class="form-control" type="file" id="bugAttachments" multiple>
+                            <div class="form-text">Screenshots, logs, or other files that help describe the issue</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitBugReport">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Bug Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content-area">
+        <!-- Reusable Data Modal -->
+        <div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dataModalLabel">Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dataModalContent">Loading...</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Enhanced Watermark Overlay -->
+        <div class="watermark-container">
+            <div class="watermark-logo watermark-1">BUG TRACKER</div>
+            <div class="watermark-text watermark-2">E-BUG-AI</div>
+            <div class="watermark-logo watermark-3">DEBUG SYSTEM</div>
+            <div class="watermark-text watermark-4">AI POWERED</div>
+            <div class="watermark-logo watermark-5">BUG TRACKER</div>
+            <div class="watermark-text watermark-6">E-BUG-AI</div>
+            <div class="watermark-logo watermark-7">DEBUG SYSTEM</div>
+            <div class="watermark-bug watermark-8">🐛</div>
+            <div class="watermark-bug watermark-9">🐛</div>
+            <div class="watermark-bug watermark-10">🐛</div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-bug me-2"></i>E-Bug-Tracker-AI
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><i class="fas fa-bell text-success"></i></a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1 text-primary"></i> <span id="userName">MDRAFI (Admin)</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-2 sidebar d-none d-md-block">
+                    <ul class="nav flex-column">
+                        <!-- Ordered navigation per request -->
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#bugReportModal">
+                                <i class="fas fa-plus-circle me-2"></i> Report Bug
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-list me-2"></i> All Bugs
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-chart-pie me-2"></i> Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-users me-2"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-cogs me-2"></i> Settings
+                            </a>
+                        </li>
+                        
+                        <!-- gap before AI FEATURES -->
+                        <li class="nav-item mt-4">
+                            <div class="nav-link">
+                                <small class="text-muted">AI FEATURES</small>
+                            </div>
+                        </li>
+                        
+                        <!-- AI FEATURES items with hover effect -->
+                        
+                        <li class="nav-item">
+                            <a class="nav-link ai-item d-flex align-items-center" href="#">
+                                <i class="fas fa-robot me-2"></i>
+                                <span>Severity Prediction</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ai-item d-flex align-items-center" href="#">
+                                <i class="fas fa-copy me-2"></i>
+                                <span>Duplicate Detection</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ai-item d-flex align-items-center" href="#">
+                                <i class="fas fa-user-check me-2"></i>
+                                <span>Auto Assignment</span>
+                            </a>
+                        </li>
+                        <!-- Removed three AI options per request -->
+                    </ul>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-10 main-content">
+                    <!-- Page Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h1 class="page-title" id="dashboardTitle">Bug Analytics Dashboard</h1>
+                            <p class="page-subtitle" id="dashboardSubtitle">AI-Powered Bug Tracking & Management System <span class="badge clean-system-badge ms-2">0 Bugs - System Clean</span></p>
+                        </div>
+                        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#bugReportModal">
+                            <i class="fas fa-plus me-2"></i> Report New Bug
+                        </button>
+                    </div>
+
+                    <!-- Role-Specific Dashboard Content -->
+                    <div id="roleDashboardContent"></div>
+
+                    <!-- Informational Tabs on Dashboard -->
+                    <div class="content-card p-3">
+                        <ul class="nav nav-tabs" id="dashboardInfoTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="dash-what-tab" data-bs-toggle="tab" data-bs-target="#dash-what" type="button" role="tab" aria-controls="dash-what" aria-selected="true">
+                                    <i class="fas fa-circle-question me-2"></i>What is E-Bug Tracker?
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="dash-use-tab" data-bs-toggle="tab" data-bs-target="#dash-use" type="button" role="tab" aria-controls="dash-use" aria-selected="false">
+                                    <i class="fas fa-industry me-2"></i>Usefulness in Industry
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="dash-ai-tab" data-bs-toggle="tab" data-bs-target="#dash-ai" type="button" role="tab" aria-controls="dash-ai" aria-selected="false">
+                                    <i class="fas fa-robot me-2"></i>The Role of AI
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="dashboardInfoTabsContent">
+                            <div class="tab-pane fade show active" id="dash-what" role="tabpanel" aria-labelledby="dash-what-tab">
+                                <div class="info-section mt-2">
+                                    <p class="mb-2"><strong>E-Bug Tracker</strong> is a centralized, role-based system for managing software defects from report to resolution, replacing ad-hoc tools like spreadsheets and emails.</p>
+                                    <ul class="mb-0">
+                                        <li><strong>Improved communication</strong> across teams</li>
+                                        <li><strong>Streamlined workflows</strong> with clear ownership</li>
+                                        <li><strong>Data-driven decisions</strong> using dashboards and history</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="dash-use" role="tabpanel" aria-labelledby="dash-use-tab">
+                                <div class="info-section mt-2">
+                                    <p class="mb-2">Essential for maintaining quality and efficiency in Agile development.</p>
+                                    <ul class="mb-0">
+                                        <li><strong>Enhanced Communication</strong>: centralized hub for Developers, QA, and Product Managers</li>
+                                        <li><strong>Early Bug Detection</strong>: address issues early to ensure reliability and reduce costs</li>
+                                        <li><strong>Strategic Tool</strong>: enables faster iteration and better UX</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="dash-ai" role="tabpanel" aria-labelledby="dash-ai-tab">
+                                <div class="info-section mt-2">
+                                    <p class="mb-2">AI and ML make bug tracking proactive.</p>
+                                    <ul class="mb-0">
+                                        <li><strong>AI-Driven Detection</strong>: scans logs, code, and tests for anomalies</li>
+                                        <li><strong>Predictive Analysis</strong>: highlights bug-prone modules</li>
+                                        <li><strong>Automated Classification & Triage</strong>: NLP-based severity and tags</li>
+                                        <li><strong>Duplicate Detection</strong>: suggests similar reports automatically</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bootstrap Tabs -->
+                    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                                <i class="fas fa-tachometer-alt me-2"></i>Overview
+                            </button>
+                        </li>
+                        <!-- Duplicate Analytics tab removed -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bugs-tab" data-bs-toggle="tab" data-bs-target="#bugs" type="button" role="tab" aria-controls="bugs" aria-selected="false">
+                                <i class="fas fa-bug me-2"></i>All Bugs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai" type="button" role="tab" aria-controls="ai" aria-selected="false">
+                                <i class="fas fa-robot me-2"></i>AI Insights
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab" aria-controls="analytics" aria-selected="false">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="dashboardTabContent">
+                        
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                            <!-- Stats Cards -->
+                            <div class="row mb-4">
+                                <div class="col-md-3 mb-3">
+                                    <div class="card stat-card stat-card-success" id="high-priority-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-success" id="high-priority-count">0</h3>
+                                                    <p class="card-text fw-bold">High Priority</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-check-circle fa-3x text-success" id="high-priority-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card stat-card stat-card-success" id="in-progress-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-success" id="in-progress-count">0</h3>
+                                                    <p class="card-text fw-bold">In Progress</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-check-circle fa-3x text-success" id="in-progress-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card stat-card stat-card-success" id="resolved-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-success" id="resolved-count">0</h3>
+                                                    <p class="card-text fw-bold">Resolved</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-check-circle fa-3x text-success" id="resolved-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card stat-card stat-card-success" id="total-bugs-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-success" id="total-bugs-count">0</h3>
+                                                    <p class="card-text fw-bold">Total Bugs</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-check-circle fa-3x text-success" id="total-bugs-icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Information Sections -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-section">
+                                        <h4><i class="fas fa-question-circle me-2 text-primary"></i> What is E-Bug Tracker?</h4>
+                                        <p class="mb-0">E-Bug Tracker is an <strong>AI-powered electronic bug tracking system</strong> that helps software development teams efficiently identify, record, track, and resolve software bugs using intelligent automation and predictive analytics.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-section">
+                                        <h4><i class="fas fa-robot me-2 text-warning"></i> How AI Works in This Software</h4>
+                                        <ul class="mb-0">
+                                            <li>Smart severity prediction using machine learning</li>
+                                            <li>Duplicate detection with text similarity algorithms</li>
+                                            <li>Auto-assignment based on team expertise</li>
+                                            <li>Predictive analytics for bug trends</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
+                            <!-- Main Charts Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <div class="chart-container">
+                                        <div class="chart-title">
+                                            <i class="fas fa-chart-bar me-2 text-success"></i>Bugs Status Overview - Bar Chart
+                                        </div>
+                                        <canvas id="statusBarChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="chart-container">
+                                        <div class="chart-title">
+                                            <i class="fas fa-chart-pie me-2 text-success"></i>Severity Distribution - Pie Chart
+                                        </div>
+                                        <canvas id="severityPieChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Second Charts Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <div class="chart-title">
+                                            <i class="fas fa-chart-line me-2 text-success"></i>Bug Trends - Line Chart
+                                        </div>
+                                        <canvas id="trendLineChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <div class="chart-title">
+                                            <i class="fas fa-users me-2 text-success"></i>Assignment Distribution
+                                        </div>
+                                        <canvas id="assignmentChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- All Bugs Tab -->
+                        <div class="tab-pane fade" id="bugs" role="tabpanel" aria-labelledby="bugs-tab">
+                            <div class="chart-container">
+                                <div class="chart-title">
+                                    <i class="fas fa-list me-2 text-success"></i>All Bugs
+                                    <span class="badge clean-system-badge ms-2" id="allBugsCount">0 Bugs</span>
+                                </div>
+                                <div class="zero-bugs-state" id="zeroBugsState">
+                                    <div class="zero-bugs-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h4 class="text-success">No Active Bugs Found</h4>
+                                    <p class="text-muted">Your system is currently running without any reported bugs. Excellent work!</p>
+                                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#bugReportModal">
+                                        <i class="fas fa-plus me-2"></i>Report First Bug
+                                    </button>
+                                </div>
+                                <div class="list-group" id="allBugsList" style="display: none;">
+                                    <!-- Bugs will appear here when reported -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Insights Tab -->
+                        <div class="tab-pane fade" id="ai" role="tabpanel" aria-labelledby="ai-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-section">
+                                        <h4><i class="fas fa-brain me-2 text-warning"></i> AI Predictions</h4>
+                                        <div class="ai-prediction">
+                                            <h6><i class="fas fa-robot me-2"></i>Current System Health</h6>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="priority-indicator priority-low"></span>
+                                                    <strong>No Active Bugs Detected</strong>
+                                                </div>
+                                                <span class="ai-confidence">Status: Clean</span>
+                                            </div>
+                                            <small class="d-block mt-2">Your system currently has 0 active bugs. Great job maintaining code quality!</small>
+                                        </div>
+                                        <ul class="mt-3">
+                                            <li><strong>Next Potential Issue:</strong> None predicted</li>
+                                            <li><strong>Recommended Action:</strong> Continue current development practices</li>
+                                            <li><strong>Team Performance:</strong> Optimal</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-section">
+                                        <h4><i class="fas fa-chart-line me-2 text-primary"></i> AI Learning Progress</h4>
+                                        <div class="progress mb-3" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85% Trained</div>
+                                        </div>
+                                        <p class="mb-2"><strong>Pattern Recognition:</strong> 92% accuracy</p>
+                                        <p class="mb-2"><strong>Severity Prediction:</strong> 87% accuracy</p>
+                                        <p class="mb-0"><strong>Duplicate Detection:</strong> 95% accuracy</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div class="tab-pane fade" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Bug Analytics Dashboard</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <!-- Bugs Status Overview - Bar Chart -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Bugs Status Overview</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <canvas id="statusBarChart" width="400" height="200"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Severity Distribution - Pie Chart -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Severity Distribution</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <canvas id="severityPieChart" width="400" height="200"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Bug Trends - Line Chart -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Bug Trends (Last 7 Days)</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <canvas id="trendsLineChart" width="400" height="200"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Assignment Distribution -->
+                                                <div class="col-md-6 mb-4">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h6 class="mb-0"><i class="fas fa-users me-2"></i>Assignment Distribution</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <canvas id="assignmentChart" width="400" height="200"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer removed -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // User management
+        let currentUser = null;
+
+        // Bug storage
+        let bugs = [];
+
+        // Role-specific dashboard templates
+        const roleTemplates = {
+            admin: `
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="fas fa-crown me-2 text-warning"></i>Administrator Controls
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #9b59b6;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-purple" id="admin-total-users">12</h3>
+                                                    <p class="card-text fw-bold">Total Users</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-users fa-2x text-purple"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-users" class="btn btn-sm btn-outline-purple mt-2 w-100">Manage Users</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #e74c3c;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-danger" id="admin-system-health">98%</h3>
+                                                    <p class="card-text fw-bold">System Health</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-heartbeat fa-2x text-danger"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-system-health" class="btn btn-sm btn-outline-danger mt-2 w-100">View System Health</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #3498db;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-primary" id="admin-ai-training">92%</h3>
+                                                    <p class="card-text fw-bold">AI Training</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-robot fa-2x text-primary"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-configure-ai" class="btn btn-sm btn-outline-primary mt-2 w-100">Configure AI</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 d-grid">
+                                <button id="btn-bug-reports" class="btn btn-outline-secondary btn-sm"><i class="fas fa-list me-2"></i>Bug Reports</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            
+            tester: `
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="fas fa-vial me-2 text-success"></i>Tester Workspace
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #2ecc71;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-success">47</h3>
+                                                    <p class="card-text fw-bold">Tests Today</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-play-circle fa-2x text-success"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-tests-today" class="btn btn-sm btn-outline-success mt-2 w-100">View Tests Today</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #f39c12;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-warning">8</h3>
+                                                    <p class="card-text fw-bold">Bugs Found</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-bug fa-2x text-warning"></i>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-warning mt-2 w-100" data-bs-toggle="modal" data-bs-target="#bugReportModal">Report Bug</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6><i class="fas fa-list-check me-2"></i>Quick Actions</h6>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button id="btn-test-cases" class="btn btn-outline-primary btn-sm">Test Cases</button>
+                                    <button id="btn-test-plans" class="btn btn-outline-info btn-sm">Test Plans</button>
+                                    <button id="btn-bug-reports" class="btn btn-outline-warning btn-sm">Bug Queue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            
+            developer: `
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <i class="fas fa-code me-2 text-info"></i>Developer Dashboard
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #3498db;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-info">5</h3>
+                                                    <p class="card-text fw-bold">Assigned Bugs</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-tasks fa-2x text-info"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-bug-reports" class="btn btn-sm btn-outline-info mt-2 w-100">View My Bugs</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #9b59b6;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-purple">3</h3>
+                                                    <p class="card-text fw-bold">Resolved Today</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-check-circle fa-2x text-purple"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-submit-fix" class="btn btn-sm btn-outline-purple mt-2 w-100">Submit Fix</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card stat-card" style="border-left: 4px solid #e67e22;">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h3 class="card-title text-orange">2</h3>
+                                                    <p class="card-text fw-bold">Code Reviews</p>
+                                                </div>
+                                                <div class="align-self-center">
+                                                    <i class="fas fa-eye fa-2x text-orange"></i>
+                                                </div>
+                                            </div>
+                                            <button id="btn-review-code" class="btn btn-sm btn-outline-orange mt-2 w-100">Review Code</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6><i class="fas fa-rocket me-2"></i>Development Tools</h6>
+                                <div class="d-grid gap-2 d-md-flex">
+                                    <button id="btn-dev-prs" class="btn btn-outline-success btn-sm">Pull Requests</button>
+                                    <button id="btn-dev-docs" class="btn btn-outline-dark btn-sm">API Docs</button>
+                                    <button id="btn-dev-logs" class="btn btn-outline-secondary btn-sm">Logs</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        // Splash Screen Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show splash screen for 8 seconds
+            setTimeout(function() {
+                const splashScreen = document.getElementById('splash-screen');
+                splashScreen.style.opacity = '0';
+                
+                setTimeout(function() {
+                    splashScreen.style.display = 'none';
+                    showLoginScreen();
+                }, 1000);
+            }, 8000);
+
+            // Add event listener for Analytics tab
+            const analyticsTab = document.getElementById('analytics-tab');
+            if (analyticsTab) {
+                analyticsTab.addEventListener('shown.bs.tab', function() {
+                    // Initialize analytics charts when tab is shown
+                    setTimeout(() => {
+                        initializeAnalyticsCharts();
+                    }, 100);
+                });
+            }
+            
+            // Login form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleLogin();
+            });
+    
+    // Settings menu open handlers
+    const dropdown = document.querySelector('#navbarDropdown');
+    if (dropdown) {
+        const menu = dropdown.parentElement?.querySelector('.dropdown-menu');
+        if (menu) {
+            const settingsItem = Array.from(menu.querySelectorAll('.dropdown-item')).find(el => el.textContent.trim().startsWith('Settings'));
+            if (settingsItem) settingsItem.addEventListener('click', function(ev){ ev.preventDefault(); openSettings(); });
+        }
+    }
+            // Bug report form submission
+            document.getElementById('submitBugReport').addEventListener('click', function() {
+                const form = document.getElementById('bugReportForm');
+                if (form.checkValidity()) {
+                    submitBugReport();
+                } else {
+                    form.reportValidity();
+                }
+            });
+            
+            // Simulate AI prediction based on title input
+            document.getElementById('bugTitle').addEventListener('input', function() {
+                const title = this.value.toLowerCase();
+                const aiPrediction = document.querySelector('.ai-prediction');
+                
+                if (title.includes('crash') || title.includes('error') || title.includes('fail')) {
+                    aiPrediction.innerHTML = `
+                        <h6><i class="fas fa-robot me-2"></i>AI Prediction</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-indicator priority-high"></span>
+                                <strong>Predicted Severity: High</strong>
+                            </div>
+                            <span class="ai-confidence">Confidence: 87%</span>
+                        </div>
+                        <small class="d-block mt-2">Based on similar bug reports, this issue appears to be high severity and might require immediate attention.</small>
+                    `;
+                } else if (title.includes('slow') || title.includes('performance')) {
+                    aiPrediction.innerHTML = `
+                        <h6><i class="fas fa-robot me-2"></i>AI Prediction</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-indicator priority-medium"></span>
+                                <strong>Predicted Severity: Medium</strong>
+                            </div>
+                            <span class="ai-confidence">Confidence: 76%</span>
+                        </div>
+                        <small class="d-block mt-2">This appears to be a performance issue that should be addressed in the next development cycle.</small>
+                    `;
+                } else if (title.length > 10) {
+                    aiPrediction.innerHTML = `
+                        <h6><i class="fas fa-robot me-2"></i>AI Prediction</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-indicator priority-low"></span>
+                                <strong>Predicted Severity: Low</strong>
+                            </div>
+                            <span class="ai-confidence">Confidence: 65%</span>
+                        </div>
+                        <small class="d-block mt-2">This appears to be a minor issue based on the description provided.</small>
+                    `;
+                } else {
+                    aiPrediction.innerHTML = `
+                        <h6><i class="fas fa-robot me-2"></i>AI Prediction</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="priority-indicator priority-low"></span>
+                                <strong>No Active Bugs Detected</strong>
+                            </div>
+                            <span class="ai-confidence">Status: Clean</span>
+                        </div>
+                        <small class="d-block mt-2">Your system currently has 0 active bugs. Great job maintaining code quality!</small>
+                    `;
+                }
+            });
+        });
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').style.display = 'block';
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const messagesDiv = document.getElementById('login-messages');
+            messagesDiv.innerHTML = '';
+            try {
+                const resp = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role })
+                });
+                const data = await resp.json();
+                if (resp.ok && data.success) {
+                    currentUser = data.user;
+                    loginUser(currentUser.email, currentUser.role, currentUser.name);
+                } else {
+                    showMessage(data.message || 'Login failed', 'error');
+                }
+            } catch (e) {
+                showMessage('Unable to reach server. Try again.', 'error');
+            }
+        }
+
+        function loginUser(email, role, nameOverride) {
+            // Clean up any existing modals first
+            cleanupModals();
+            
+            if (!currentUser) {
+                currentUser = { email, role, name: nameOverride || email };
+            }
+            
+            // Hide login screen
+            document.getElementById('login-screen').style.display = 'none';
+            
+            // Update user interface based on role
+            document.getElementById('userName').textContent = currentUser.name || email;
+            document.getElementById('dashboardTitle').textContent = `${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`;
+            document.getElementById('dashboardSubtitle').innerHTML = `AI-Powered Bug Tracking & Management System <span class="badge clean-system-badge ms-2">${bugs.length} Bugs - System ${bugs.length === 0 ? 'Clean' : 'Active'}</span>`;
+            
+            // Show main dashboard
+            document.querySelector('.main-content-area').style.display = 'block';
+            
+            // Initialize role-specific dashboard
+            updateRoleBasedDashboard(role);
+            
+            // Update sidebar based on role
+            updateSidebarForRole(role);
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Update dashboard with real data
+            updateDashboardWithBug();
+
+            // Bind interactive buttons after role content renders with a small delay
+            setTimeout(() => {
+                bindInteractiveButtons();
+            bindSidebarNav();
+            }, 100);
+        }
+
+        function logout() {
+            // Clean up any open modals before logout
+            cleanupModals();
+            
+            currentUser = null;
+            document.querySelector('.main-content-area').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('loginForm').reset();
+        }
+
+        function cleanupModals() {
+            // Force close and dispose of any open modals
+            const modalElement = document.getElementById('dataModal');
+            if (modalElement) {
+                const existingModal = bootstrap.Modal.getInstance(modalElement);
+                if (existingModal) {
+                    existingModal.hide();
+                    existingModal.dispose();
+                }
+            }
+            
+            // Remove any stuck backdrop elements
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            
+            // Reset body classes and styles
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('login-messages');
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            messagesDiv.innerHTML = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+
+        function submitBugReport() {
+            const title = document.getElementById('bugTitle').value;
+            const severity = document.getElementById('bugSeverity').value;
+            const description = document.getElementById('bugDescription').value;
+            const component = document.getElementById('bugComponent').value;
+            const assignee = document.getElementById('bugAssignee').value || 'Auto-assigned';
+            
+            // Create new bug object
+            const newBug = {
+                id: Date.now(),
+                title: title,
+                severity: severity,
+                description: description,
+                component: component,
+                assignee: assignee,
+                status: 'open',
+                reporter: currentUser.name,
+                date: new Date().toLocaleDateString(),
+                timestamp: new Date()
+            };
+            
+            // Add to bugs array
+            bugs.push(newBug);
+            
+            // Show success message
+            alert('Bug report submitted successfully!');
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bugReportModal'));
+            modal.hide();
+            
+            // Reset the form
+            document.getElementById('bugReportForm').reset();
+            
+            // Update the dashboard
+            updateDashboardWithBug();
+        }
+
+// Settings: theme toggle and per-user logout label
+function openSettings() {
+    const userLabel = currentUser ? `${currentUser.role.toUpperCase()} Logout` : 'Logout';
+    const html = `
+        <div class="row g-3">
+            <div class="col-12">
+                <h6><i class="fas fa-paint-brush me-2"></i>Theme</h6>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="setTheme('light')">Light</button>
+                    <button class="btn btn-sm btn-outline-dark" onclick="setTheme('dark')">Dark</button>
+                </div>
+            </div>
+            <div class="col-12">
+                <h6 class="mt-3"><i class="fas fa-user-shield me-2"></i>Account</h6>
+                <button class="btn btn-sm btn-outline-danger" onclick="logout()">${userLabel}</button>
+            </div>
+        </div>`;
+    showInModal('Settings', html);
+}
+
+function setTheme(mode) {
+    document.body.classList.toggle('dark-theme', mode === 'dark');
+    try { sessionStorage.setItem('theme', mode); } catch(_) {}
+}
+
+// Restore theme on load
+(function(){
+    try {
+        const t = sessionStorage.getItem('theme');
+        if (t) { setTheme(t); }
+    } catch(_) {}
+})();
+
+        async function updateDashboardWithBug() {
+            try {
+                // Fetch real bug data from API
+                const response = await fetch('/api/bug_reports');
+                const data = await response.json();
+                
+                // Update main dashboard stats cards with real data
+                // High Priority (Critical + High severity)
+                const highPriority = data.summary.bySeverity.critical + data.summary.bySeverity.high;
+                updateMainStatCard('high-priority', highPriority, 'High Priority', 'danger', 'exclamation-triangle');
+                
+                // In Progress (bugs with 'in progress' status)
+                const inProgress = data.reports.filter(bug => bug.status === 'in progress').length;
+                updateMainStatCard('in-progress', inProgress, 'In Progress', 'warning', 'clock');
+                
+                // Resolved (bugs with 'resolved' status)
+                const resolved = data.reports.filter(bug => bug.status === 'resolved').length;
+                updateMainStatCard('resolved', resolved, 'Resolved', 'success', 'check-circle');
+                
+                // Total Bugs
+                const totalBugs = data.summary.total;
+                updateMainStatCard('total-bugs', totalBugs, 'Total Bugs', totalBugs > 0 ? 'info' : 'success', totalBugs > 0 ? 'bug' : 'check-circle');
+                
+                // Update badge with real data
+                document.getElementById('dashboardSubtitle').innerHTML = `AI-Powered Bug Tracking & Management System <span class="badge ${totalBugs === 0 ? 'clean-system-badge' : 'bg-warning'} ms-2">${totalBugs} Bugs - System ${totalBugs === 0 ? 'Clean' : 'Active'}</span>`;
+                
+                // Update role-specific dashboard data
+                updateRoleSpecificData();
+                
+                // Update bug display
+                updateBugDisplay();
+                
+                // Update charts
+                initializeCharts();
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+                // Fallback to local bugs array if API fails
+                document.querySelectorAll('.stat-card .card-title').forEach(el => {
+                    el.textContent = bugs.length;
+                });
+            }
+        }
+
+        function updateMainStatCard(cardId, value, label, colorClass, iconClass) {
+            const countElement = document.getElementById(`${cardId}-count`);
+            const iconElement = document.getElementById(`${cardId}-icon`);
+            const cardElement = document.getElementById(`${cardId}-card`);
+            
+            if (countElement) countElement.textContent = value;
+            if (iconElement) {
+                iconElement.className = `fas fa-${iconClass} fa-3x text-${colorClass}`;
+            }
+            if (cardElement) {
+                cardElement.className = `card stat-card stat-card-${colorClass}`;
+                cardElement.style.borderLeft = `4px solid var(--${colorClass === 'danger' ? 'danger' : colorClass === 'warning' ? 'warning' : colorClass === 'success' ? 'success' : 'info'})`;
+            }
+        }
+
+        function updateStatCard(cardElement, value, label, colorClass, iconClass) {
+            const titleElement = cardElement.querySelector('.card-title');
+            const textElement = cardElement.querySelector('.card-text');
+            const iconElement = cardElement.querySelector('i');
+            
+            if (titleElement) titleElement.textContent = value;
+            if (textElement) textElement.textContent = label;
+            if (iconElement) {
+                iconElement.className = `fas fa-${iconClass} fa-3x text-${colorClass}`;
+            }
+            
+            // Update card border color
+            cardElement.className = `card stat-card stat-card-${colorClass}`;
+            cardElement.style.borderLeft = `4px solid var(--${colorClass === 'danger' ? 'danger' : colorClass === 'warning' ? 'warning' : colorClass === 'success' ? 'success' : 'info'})`;
+        }
+
+        async function updateRoleSpecificData() {
+            try {
+                // Update admin dashboard data
+                const usersResponse = await fetch('/api/users');
+                const usersData = await usersResponse.json();
+                const usersElement = document.getElementById('admin-total-users');
+                if (usersElement) {
+                    usersElement.textContent = usersData.summary.total;
+                }
+
+                const healthResponse = await fetch('/api/system_health');
+                const healthData = await healthResponse.json();
+                const healthElement = document.getElementById('admin-system-health');
+                if (healthElement) {
+                    const healthPercent = Math.round(100 - (healthData.metrics.cpuPercent + healthData.metrics.memoryPercent) / 2);
+                    healthElement.textContent = `${healthPercent}%`;
+                }
+
+                const aiResponse = await fetch('/api/ai_config');
+                const aiData = await aiResponse.json();
+                const aiElement = document.getElementById('admin-ai-training');
+                if (aiElement) {
+                    const avgAccuracy = Math.round(aiData.models.reduce((sum, model) => sum + model.accuracy, 0) / aiData.models.length);
+                    aiElement.textContent = `${avgAccuracy}%`;
+                }
+            } catch (error) {
+                console.error('Error updating role-specific data:', error);
+            }
+        }
+
+        function updateBugDisplay() {
+            const allBugsList = document.getElementById('allBugsList');
+            const zeroBugsState = document.getElementById('zeroBugsState');
+            const allBugsCount = document.getElementById('allBugsCount');
+            
+            if (allBugsCount) allBugsCount.textContent = `${bugs.length} Bugs`;
+            
+            if (bugs.length === 0) {
+                if (zeroBugsState) zeroBugsState.style.display = 'block';
+                if (allBugsList) allBugsList.style.display = 'none';
+            } else {
+                if (zeroBugsState) zeroBugsState.style.display = 'none';
+                if (allBugsList) {
+                    allBugsList.style.display = 'block';
+                    allBugsList.innerHTML = '';
+                    
+                    // Add bugs to list
+                    bugs.forEach(bug => {
+                        const severityClass = bug.severity;
+                        const severityColors = {
+                            'critical': 'danger',
+                            'high': 'danger',
+                            'medium': 'warning',
+                            'low': 'success'
+                        };
+                        
+                        const bugItem = document.createElement('div');
+                        bugItem.className = `list-group-item bug-list-item ${bug.severity} d-flex justify-content-between align-items-center`;
+                        bugItem.innerHTML = `
+                            <div>
+                                <h6 class="mb-1">${bug.title}</h6>
+                                <p class="mb-1 text-muted">${bug.description.substring(0, 100)}...</p>
+                                <small class="text-muted">Reported by ${bug.reporter} on ${bug.date} | ${bug.component}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-${severityColors[bug.severity]} me-2">${bug.severity.toUpperCase()}</span>
+                                <span class="badge bg-primary">${bug.status.toUpperCase()}</span>
+                                <div class="mt-2">
+                                    <small class="text-muted">Assigned to: ${bug.assignee}</small>
+                                </div>
+                            </div>
+                        `;
+                        allBugsList.appendChild(bugItem);
+                    });
+                }
+            }
+        }
+
+        // Update dashboard content based on role
+        function updateRoleBasedDashboard(role) {
+            const roleDashboardContent = document.getElementById('roleDashboardContent');
+            if (roleDashboardContent && roleTemplates[role]) {
+                roleDashboardContent.innerHTML = roleTemplates[role];
+            }
+        }
+
+        function bindInteractiveButtons() {
+            // Clear any existing event listeners to prevent duplicates
+            const existingButtons = document.querySelectorAll('#btn-users, #btn-system-health, #btn-bug-reports, #btn-configure-ai, #btn-submit-fix, #btn-review-code, #btn-dev-prs, #btn-dev-docs, #btn-dev-logs');
+            existingButtons.forEach(btn => {
+                // Clone the button to remove all event listeners
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+
+            const usersBtn = document.getElementById('btn-users');
+            if (usersBtn) {
+                usersBtn.addEventListener('click', async () => {
+                    showInModal('Users', '<div class="text-muted">Loading users...</div>');
+                    try {
+                        const res = await fetch('/api/users');
+                        const data = await res.json();
+                        const list = data.users.map(u => `
+                            <tr style="cursor: pointer;" onclick="showUserDetails(${u.id})" title="Click to view details">
+                                <td>${u.id}</td>
+                                <td>${u.name}</td>
+                                <td>${u.email}</td>
+                                <td><span class="badge bg-${u.role === 'admin' ? 'danger' : (u.role === 'tester' ? 'warning' : 'info')}">${u.role.toUpperCase()}</span></td>
+                                <td>${u.active ? '<span class="badge bg-success">ACTIVE</span>' : '<span class="badge bg-secondary">INACTIVE</span>'}</td>
+                            </tr>
+                        `).join('');
+                        const html = `
+                            <div class="mb-2">
+                                <span class="badge bg-primary me-2">Total: ${data.summary.total}</span>
+                                <span class="badge bg-danger me-2">Admins: ${data.summary.admins}</span>
+                                <span class="badge bg-warning text-dark me-2">Testers: ${data.summary.testers}</span>
+                                <span class="badge bg-info text-dark">Developers: ${data.summary.developers}</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${list}</tbody>
+                                </table>
+                            </div>`;
+                        showInModal('Users', html);
+                    } catch (e) {
+                        showInModal('Users', '<div class="text-danger">Failed to load users.</div>');
+                    }
+                });
+            }
+
+            const sysBtn = document.getElementById('btn-system-health');
+            if (sysBtn) {
+                sysBtn.addEventListener('click', async () => {
+                    showInModal('System Health', '<div class="text-muted">Checking system health...</div>');
+                    try {
+                        const res = await fetch('/api/system_health');
+                        const data = await res.json();
+                        const comps = data.components.map(c => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${c.name}
+                                <span class="badge ${c.status === 'OK' ? 'bg-success' : 'bg-warning text-dark'}">${c.status}</span>
+                            </li>
+                        `).join('');
+                        const html = `
+                            <div class="row g-3 mb-2">
+                                <div class="col">
+                                    <div class="card"><div class="card-body"><strong>CPU</strong><div class="progress mt-2" style="height: 8px;"><div class="progress-bar bg-info" style="width:${data.metrics.cpuPercent}%"></div></div><small>${data.metrics.cpuPercent}%</small></div></div>
+                                </div>
+                                <div class="col">
+                                    <div class="card"><div class="card-body"><strong>Memory</strong><div class="progress mt-2" style="height: 8px;"><div class="progress-bar bg-primary" style="width:${data.metrics.memoryPercent}%"></div></div><small>${data.metrics.memoryPercent}%</small></div></div>
+                                </div>
+                                <div class="col">
+                                    <div class="card"><div class="card-body"><strong>Error Rate</strong><div>${data.metrics.errorRatePct}%</div></div></div>
+                                </div>
+                                <div class="col">
+                                    <div class="card"><div class="card-body"><strong>Uptime</strong><div>${data.metrics.uptimeHours} hrs</div></div></div>
+                                </div>
+                            </div>
+                            <div class="alert ${data.status === 'Healthy' ? 'alert-success' : 'alert-warning'} py-2">Status: ${data.status}</div>
+                            <ul class="list-group">${comps}</ul>
+                            <small class="text-muted d-block mt-2">Checked at ${data.checkedAt}</small>
+                        `;
+                        showInModal('System Health', html);
+                    } catch (e) {
+                        showInModal('System Health', '<div class="text-danger">Failed to load system health.</div>');
+                    }
+                });
+            }
+
+            const bugBtns = document.querySelectorAll('#btn-bug-reports');
+            if (bugBtns && bugBtns.length) {
+                bugBtns.forEach(btn => btn.addEventListener('click', async () => {
+                    showInModal('Bug Reports', '<div class="text-muted">Loading bug reports...</div>');
+                    try {
+                        const res = await fetch('/api/bug_reports');
+                        const data = await res.json();
+                        const items = data.reports.map(r => `
+                            <tr>
+                                <td>${r.id}</td>
+                                <td>${r.title}</td>
+                                <td><span class="badge bg-${r.severity === 'low' ? 'success' : r.severity === 'medium' ? 'warning text-dark' : 'danger'}">${r.severity.toUpperCase()}</span></td>
+                                <td>${r.component}</td>
+                                <td>${r.assignee}</td>
+                                <td><span class="badge bg-${r.status === 'open' ? 'primary' : r.status === 'in progress' ? 'info text-dark' : r.status === 'resolved' ? 'success' : 'secondary'}">${r.status.toUpperCase()}</span></td>
+                                <td><small>${new Date(r.createdAt).toLocaleString()}</small></td>
+                            </tr>
+                        `).join('');
+                        const html = `
+                            <div class="mb-2">
+                                <span class="badge bg-primary me-2">Total: ${data.summary.total}</span>
+                                <span class="badge bg-danger me-2">Critical: ${data.summary.bySeverity.critical}</span>
+                                <span class="badge bg-danger me-2">High: ${data.summary.bySeverity.high}</span>
+                                <span class="badge bg-warning text-dark me-2">Medium: ${data.summary.bySeverity.medium}</span>
+                                <span class="badge bg-success">Low: ${data.summary.bySeverity.low}</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th><th>Title</th><th>Severity</th><th>Component</th><th>Assignee</th><th>Status</th><th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${items}</tbody>
+                                </table>
+                            </div>`;
+                        showInModal('Bug Reports', html);
+                    } catch (e) {
+                        showInModal('Bug Reports', '<div class="text-danger">Failed to load bug reports.</div>');
+                    }
+                }));
+            }
+
+            // Tester workspace: Tests Today summary
+            const testsTodayBtn = document.getElementById('btn-tests-today');
+            if (testsTodayBtn) {
+                testsTodayBtn.addEventListener('click', async () => {
+                    showInModal('Tests Today', '<div class="text-muted">Loading today\'s execution summary...</div>');
+                    try {
+                        const res = await fetch('/api/tests_today');
+                        if (!res.ok) throw new Error('Failed to fetch tests');
+                        const data = await res.json();
+                        const pct = (() => {
+                            const fromPayload = typeof data.completionPct === 'number' ? data.completionPct : null;
+                            const computed = data.totalTests ? (data.completedToday / data.totalTests) * 100 : 0;
+                            const percent = fromPayload ?? computed;
+                            return Math.min(100, Math.max(0, Math.round(percent)));
+                        })();
+                        const completionStatus = (() => {
+                            if (pct >= 90) return {label: 'Excellent', cls: 'bg-success'};
+                            if (pct >= 70) return {label: 'On Track', cls: 'bg-primary'};
+                            if (pct >= 40) return {label: 'At Risk', cls: 'bg-warning text-dark'};
+                            return {label: 'Behind', cls: 'bg-danger'};
+                        })();
+                        const completedStatus = data.completedToday > 0
+                            ? {label: 'Executed', cls: 'bg-success'}
+                            : {label: 'Not Started', cls: 'bg-secondary'};
+                        const pendingStatus = data.pendingToday > 0
+                            ? {label: 'In Queue', cls: 'bg-warning text-dark'}
+                            : {label: 'Cleared', cls: 'bg-success'};
+                        const renderList = (items, emptyText) => {
+                            if (!items || !items.length) {
+                                return `<div class="text-muted small">${emptyText}</div>`;
+                            }
+                            return `
+                                <ul class="list-group list-group-flush">
+                                    ${items.map(t => `
+                                        <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <div class="fw-semibold">${t.key} — ${t.title}</div>
+                                                <div class="small text-muted">${(t.component || '').toUpperCase()} · ${t.priority}</div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge ${t.status==='Passed'?'bg-success':t.status==='Failed'?'bg-danger':t.status==='Blocked'?'bg-dark':'bg-secondary'}">${t.status}</span>
+                                                <div class="small text-muted">${t.lastRun ? new Date(t.lastRun).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Not run'}</div>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            `;
+                        };
+                        const html = `
+                            <div class="row text-center mb-3">
+                                <div class="col">
+                                    <div class="fs-3 fw-bold text-success">${data.completedToday}</div>
+                                    <div class="text-muted small">Completed</div>
+                                    <span class="badge ${completedStatus.cls}">${completedStatus.label}</span>
+                                </div>
+                                <div class="col">
+                                    <div class="fs-3 fw-bold text-warning">${data.pendingToday}</div>
+                                    <div class="text-muted small">Pending</div>
+                                    <span class="badge ${pendingStatus.cls}">${pendingStatus.label}</span>
+                                </div>
+                                <div class="col">
+                                    <div class="fs-3 fw-bold">${pct}%</div>
+                                    <div class="text-muted small">Completion</div>
+                                    <span class="badge ${completionStatus.cls}">${completionStatus.label}</span>
+                                </div>
+                            </div>
+                            <div class="progress mb-4" style="height: 18px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: ${pct}%;" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">${pct}%</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-success"><i class="fas fa-check-circle me-2"></i>Completed Today</h6>
+                                    ${renderList(data.completed, 'No tests completed yet.')}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-warning"><i class="fas fa-hourglass-half me-2"></i>Pending Today</h6>
+                                    ${renderList(data.pending, 'All tests completed!')}
+                                </div>
+                            </div>
+                        `;
+                        showInModal('Tests Today', html);
+                    } catch (err) {
+                        showInModal('Tests Today', '<div class="text-danger">Unable to load today\'s test progress.</div>');
+                    }
+                });
+            }
+
+            // Tester quick actions: Test Cases
+            const tcBtn = document.getElementById('btn-test-cases');
+            if (tcBtn) {
+                tcBtn.addEventListener('click', async () => {
+                    showInModal('Test Cases', '<div class="text-muted">Loading test cases...</div>');
+                    try {
+                        const res = await fetch('/api/test_cases');
+                        const cases = await res.json();
+                        const rows = (Array.isArray(cases) && cases.length ? cases : []).map(c => `
+                            <tr style="cursor:pointer" onclick="navigateToTestCase('${c.key}')">
+                                <td>${c.key}</td>
+                                <td>${c.title}</td>
+                                <td><span class="badge bg-secondary">${c.component}</span></td>
+                                <td><span class="badge ${c.priority==='High'?'bg-danger':c.priority==='Medium'?'bg-warning text-dark':'bg-success'}">${c.priority}</span></td>
+                                <td><span class="badge ${c.status==='Passed'?'bg-success':c.status==='Failed'?'bg-danger':c.status==='Blocked'?'bg-dark':'bg-secondary'}">${c.status}</span></td>
+                                <td>${new Date(c.lastRun).toLocaleString()}</td>
+                                <td>${c.owner}</td>
+                            </tr>
+                        `).join('');
+                        const fallback = `<div class="text-muted">No test cases available.</div>`;
+                        const html = rows ? `
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr><th>Key</th><th>Title</th><th>Component</th><th>Priority</th><th>Status</th><th>Last Run</th><th>Owner</th></tr>
+                                    </thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>` : fallback;
+                        showInModal('Test Cases', html);
+                    } catch (e) {
+                        // Local sample fallback data
+                        const localCases = [
+                          {key:'TC-201', title:'Verify login form validation', component:'auth', priority:'High', status:'Draft', lastRun:new Date().toISOString(), owner:'QA'},
+                          {key:'TC-202', title:'Create bug with all fields', component:'frontend', priority:'Medium', status:'Draft', lastRun:new Date().toISOString(), owner:'QA'}
+                        ];
+                        const rows = localCases.map(c=>`
+                          <tr style=\"cursor:pointer\" onclick=\"navigateToTestCase('${c.key}')\"> 
+                            <td>${c.key}</td><td>${c.title}</td><td>${c.component}</td><td>${c.priority}</td><td>${c.status}</td><td>-</td><td>${c.owner}</td>
+                          </tr>`).join('');
+                        const html = `<div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Key</th><th>Title</th><th>Component</th><th>Priority</th><th>Status</th><th>Last Run</th><th>Owner</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                        showInModal('Test Cases', html);
+                    }
+                });
+            }
+
+            // Developer: Submit Fix (Resolved Today)
+            const submitFixBtn = document.getElementById('btn-submit-fix');
+            if (submitFixBtn) {
+                submitFixBtn.addEventListener('click', async () => {
+                    const html = `
+                      <div class="content-card p-3">
+                        <h5 class="mb-3"><i class="fas fa-check-circle me-2"></i>Resolved Today — Submit Fix</h5>
+                        <ol class="mb-3">
+                          <li>Link the commit to a bug ID (e.g., BUG-123)</li>
+                          <li>Write unit tests covering the regression</li>
+                          <li>Run lints and tests locally (npm test / pytest)</li>
+                          <li>Create a pull request with clear description</li>
+                          <li>Request two reviewers; address feedback</li>
+                        </ol>
+                        <div class="alert alert-info py-2">Tip: Reference the bug ID in the commit message to auto-link.</div>
+                      </div>`;
+                    showInModal('Submit Fix', html);
+                });
+            }
+
+            // Developer: Review Code
+            const reviewCodeBtn = document.getElementById('btn-review-code');
+            if (reviewCodeBtn) {
+                reviewCodeBtn.addEventListener('click', async () => {
+                    const html = `
+                      <div class="content-card p-3">
+                        <h5 class="mb-3"><i class="fas fa-search me-2"></i>Code Reviews</h5>
+                        <h6>How to Review</h6>
+                        <ul>
+                          <li>Understand context: issue, design, and tests</li>
+                          <li>Check correctness, edge cases, and error handling</li>
+                          <li>Evaluate readability and performance</li>
+                          <li>Verify tests and coverage</li>
+                          <li>Leave actionable, kind comments</li>
+                        </ul>
+                        <h6 class="mt-3">What to Look For</h6>
+                        <ul>
+                          <li>API/contract changes</li>
+                          <li>Security and input validation</li>
+                          <li>Race conditions and async bugs</li>
+                          <li>N+1 queries or inefficient loops</li>
+                        </ul>
+                      </div>`;
+                    showInModal('Code Reviews', html);
+                });
+            }
+
+            // Developer Tools: Pull Requests
+            const prBtn = document.getElementById('btn-dev-prs');
+            if (prBtn) {
+                prBtn.addEventListener('click', () => {
+                    const html = `
+                      <div class="content-card p-3">
+                        <h5 class="mb-3"><i class="fas fa-code-branch me-2"></i>Pull Requests</h5>
+                        <p class="mb-2">PR workflow for this project:</p>
+                        <ol>
+                          <li>Create feature branch from main</li>
+                          <li>Commit with bug ID references (e.g., BUG-123)</li>
+                          <li>Open PR → CI runs tests and lints</li>
+                          <li>Address reviewer comments</li>
+                          <li>Squash & merge when approved</li>
+                        </ol>
+                        <div class="alert alert-success py-2">Tip: Keep PRs small and focused (≤ 300 lines) for faster reviews.</div>
+                      </div>`;
+                    showInModal('Pull Requests', html);
+                });
+            }
+
+            // Developer Tools: API Docs
+            const docsBtn = document.getElementById('btn-dev-docs');
+            if (docsBtn) {
+                docsBtn.addEventListener('click', () => {
+                    const html = `
+                      <div class="content-card p-3">
+                        <h5 class="mb-3"><i class="fas fa-book me-2"></i>API Docs (Project)</h5>
+                        <ul>
+                          <li><code>/api/bug_reports</code> — GET bug list (dynamic)</li>
+                          <li><code>/api/system_health</code> — GET latest metrics snapshot</li>
+                          <li><code>/api/ai_config</code> — GET current AI status</li>
+                          <li><code>/api/users</code> — GET/POST/PUT/DELETE users</li>
+                          <li><code>/api/test_cases</code> — GET test cases</li>
+                          <li><code>/api/test_plans</code> — GET test plans</li>
+                        </ul>
+                        <p class="mb-0">All endpoints return JSON; use <code>fetch()</code> with <code>Content-Type: application/json</code>.</p>
+                      </div>`;
+                    showInModal('API Docs', html);
+                });
+            }
+
+            // Developer Tools: Logs
+            const logsBtn = document.getElementById('btn-dev-logs');
+            if (logsBtn) {
+                logsBtn.addEventListener('click', () => {
+                    const now = new Date().toISOString();
+                    const sample = [
+                      `[${now}] INFO  api  GET /api/system_health 200`,
+                      `[${now}] INFO  api  GET /api/bug_reports 200 (12 items)`,
+                      `[${now}] WARN  ai   training snapshot delayed`,
+                      `[${now}] ERROR db   SQLITE_BUSY on write; retrying...`,
+                    ].join('\n');
+                    const html = `
+                      <div class="content-card p-3">
+                        <h5 class="mb-3"><i class="fas fa-file-alt me-2"></i>Application Logs</h5>
+                        <pre class="code">${sample}</pre>
+                        <div class="alert alert-info py-2 mb-0">Note: This is a sample log view. Integrate real logs via a /api/logs endpoint or a log viewer.</div>
+                      </div>`;
+                    showInModal('Logs', html);
+                });
+            }
+
+            // Tester quick actions: Test Plans
+            const tpBtn = document.getElementById('btn-test-plans');
+            if (tpBtn) {
+                tpBtn.addEventListener('click', async () => {
+                    showInModal('Test Plans', '<div class="text-muted">Loading test plans...</div>');
+                    try {
+                        const res = await fetch('/api/test_plans');
+                        const plans = await res.json();
+                        const rows = (Array.isArray(plans) && plans.length ? plans : []).map(p => `
+                            <tr style="cursor:pointer" onclick="navigateToTestPlan('${p.name.replace(/'/g, "\'")}')">
+                                <td>${p.name}</td>
+                                <td>${p.version}</td>
+                                <td>${p.owner}</td>
+                                <td><span class="badge bg-info text-dark">${p.totalCases}</span></td>
+                                <td>${new Date(p.lastUpdated).toLocaleString()}</td>
+                                <td><span class="badge ${p.status==='Active'?'bg-success':'bg-secondary'}">${p.status}</span></td>
+                            </tr>
+                        `).join('');
+                        const fallback = `<div class="text-muted">No test plans available.</div>`;
+                        const html = rows ? `
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr><th>Name</th><th>Version</th><th>Owner</th><th>Total Cases</th><th>Last Updated</th><th>Status</th></tr>
+                                    </thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>` : fallback;
+                        showInModal('Test Plans', html);
+                    } catch (e) {
+                        const localPlans = [
+                          {name:'Smoke Tests', version:'v1.0', owner:'QA Lead', totalCases:25, status:'Active'},
+                          {name:'Regression Suite', version:'v1.2', owner:'QA Lead', totalCases:120, status:'Draft'}
+                        ];
+                        const rows = localPlans.map(p=>`
+                          <tr style=\"cursor:pointer\" onclick=\"navigateToTestPlan('${p.name.replace(/'/g, "\\'")}')\"> 
+                            <td>${p.name}</td><td>${p.version}</td><td>${p.owner}</td><td>${p.totalCases}</td><td>-</td><td>${p.status}</td>
+                          </tr>`).join('');
+                        const html = `<div class="table-responsive"><table class="table table-sm align-middle"><thead><tr><th>Name</th><th>Version</th><th>Owner</th><th>Total Cases</th><th>Last Updated</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                        showInModal('Test Plans', html);
+                    }
+                });
+            }
+
+        // Detail views for tester items
+        function showTestCaseDetails(key, title, component, priority, status, owner) {
+            // Provide specific guidance for common patterns
+            const caseGuides = {
+              'TC-201': {
+                what: 'Form validation verifies required fields, min/max lengths, and format (e.g., email).',
+                where: 'Web login page in QA environment',
+                output: 'Error messages appear inline; valid input allows submission.'
+              },
+              'TC-202': {
+                what: 'End‑to‑end creation flow of a bug report with all mandatory fields.',
+                where: 'UI → Report Bug modal and backend API /api/bug_reports',
+                output: 'Bug record stored; appears in lists and analytics.'
+              }
+            };
+            const guide = caseGuides[key] || {
+              what: 'Validates a specific user scenario against requirements.',
+              where: 'QA environment using the app UI and logs',
+              output: 'Actual results match expected without regressions.'
+            };
+            const html = `
+              <div class="content-card p-3">
+                <h5 class="mb-2"><i class="fas fa-clipboard-check me-2"></i>${key} — ${title}</h5>
+                <div class="mb-2">
+                  <span class="badge bg-secondary me-1">${component}</span>
+                  <span class="badge ${priority==='High'?'bg-danger':priority==='Medium'?'bg-warning text-dark':'bg-success'} me-1">${priority}</span>
+                  <span class="badge bg-primary">${status}</span>
+                </div>
+                <p class="mb-2"><strong>Owner:</strong> ${owner}</p>
+                <h6>How to Execute</h6>
+                <ol>
+                  <li>Setup preconditions (user, data, environment)</li>
+                  <li>Follow steps with defined inputs</li>
+                  <li>Capture actual results and compare with expected</li>
+                  <li>Record evidence (screenshots/logs)</li>
+                  <li>Mark pass/fail and file defects if needed</li>
+                </ol>
+                <h6>What is this test?</h6>
+                <p>${guide.what}</p>
+                <h6>Where to execute</h6>
+                <p>${guide.where}</p>
+                <h6>Expected Output</h6>
+                <p>${guide.output}</p>
+              </div>`;
+            showInModal(`Test Case ${key}`, html);
+        }
+
+        function showTestPlanDetails(name, version, owner, totalCases, status) {
+            // Specialized descriptions for known plans
+            const planGuides = {
+              'Smoke Tests': {
+                what: 'Smoke testing is a quick check of critical paths to ensure the build is stable enough for deeper testing.',
+                where: 'Run on every new build in QA (or CI) against core flows (login, create bug, list view).',
+                how: [
+                  'Deploy latest build to QA',
+                  'Execute 10–20 high‑value test cases',
+                  'Fail fast; if any critical fails, stop and report'
+                ],
+                outcome: 'Green light to proceed with regression and deeper testing.'
+              },
+              'Regression Suite': {
+                what: 'Regression testing validates that existing functionality still works after changes.',
+                where: 'Run each sprint or before release across broad application areas.',
+                how: [
+                  'Select stable suites across auth, bug lifecycle, analytics',
+                  'Automate where possible; parallelize runs',
+                  'Track pass rate and defect leakage'
+                ],
+                outcome: 'Confidence that code changes have not introduced unintended side effects.'
+              }
+            };
+            const g = planGuides[name] || {
+              what: 'A grouped set of test activities with scope, schedule, and reporting.',
+              where: 'QA environment and CI pipeline',
+              how: ['Define scope', 'Prepare data/env', 'Execute suites', 'Report and sign‑off'],
+              outcome: 'Aligned execution and quality signal for the release.'
+            };
+            const howList = g.how.map(s=>`<li>${s}</li>`).join('');
+            const html = `
+              <div class="content-card p-3">
+                <h5 class="mb-2"><i class="fas fa-list-alt me-2"></i>${name} — ${version}</h5>
+                <div class="mb-2">
+                  <span class="badge bg-info text-dark me-1">${totalCases} Cases</span>
+                  <span class="badge ${status==='Active'?'bg-success':'bg-secondary'}">${status}</span>
+                </div>
+                <p class="mb-2"><strong>Owner:</strong> ${owner}</p>
+                <h6>What is this plan?</h6>
+                <p>${g.what}</p>
+                <h6>Where to execute</h6>
+                <p>${g.where}</p>
+                <h6>How to run</h6>
+                <ol>${howList}</ol>
+                <h6>Expected outcome</h6>
+                <p>${g.outcome}</p>
+              </div>`;
+            showInModal(`Test Plan — ${name}`, html);
+        }
+
+        // Hash routing for dedicated pages
+        function navigateToTestCase(key){
+            window.location.hash = `test-case/${encodeURIComponent(key)}`;
+        }
+        function navigateToTestPlan(name){
+            window.location.hash = `test-plan/${encodeURIComponent(name)}`;
+        }
+
+        window.addEventListener('hashchange', handleRoute);
+        document.addEventListener('DOMContentLoaded', handleRoute);
+
+        async function handleRoute(){
+            const hash = window.location.hash.replace('#','');
+            if (!hash) return;
+            const [route, ...rest] = hash.split('/');
+            if (route === 'test-case'){
+                const key = decodeURIComponent(rest.join('/'));
+                try{
+                    const res = await fetch('/api/test_cases');
+                    const items = await res.json();
+                    const c = Array.isArray(items)? items.find(x=>x.key===key) : null;
+                    if (c){
+                        showTestCaseDetails(c.key, c.title, c.component, c.priority, c.status, c.owner);
+                        return;
+                    }
+                }catch(_){ }
+                // fallback if not found
+                showTestCaseDetails(key, 'Test Case', 'general', 'Medium', 'Draft', 'QA');
+            }
+            if (route === 'test-plan'){
+                const name = decodeURIComponent(rest.join('/'));
+                try{
+                    const res = await fetch('/api/test_plans');
+                    const items = await res.json();
+                    const p = Array.isArray(items)? items.find(x=>x.name===name) : null;
+                    if (p){
+                        showTestPlanDetails(p.name, p.version, p.owner, p.totalCases, p.status);
+                        return;
+                    }
+                }catch(_){ }
+                showTestPlanDetails(name, 'v1.0', 'QA Lead', 0, 'Draft');
+            }
+        }
+
+            const aiBtn = document.getElementById('btn-configure-ai');
+            if (aiBtn) {
+                aiBtn.addEventListener('click', async () => {
+                    showInModal('AI Configuration', '<div class="text-muted">Loading AI configuration...</div>');
+                    try {
+                        const res = await fetch('/api/ai_config');
+                        const data = await res.json();
+                        const models = data.models.map(m => `
+                            <tr>
+                                <td>${m.name}</td>
+                                <td><span class="badge bg-${m.status === 'Active' ? 'success' : 'warning text-dark'}">${m.status}</span></td>
+                                <td><div class="progress" style="height: 20px;"><div class="progress-bar bg-info" style="width:${m.accuracy}%">${m.accuracy}%</div></div></td>
+                                <td>${m.last_trained}</td>
+                            </tr>
+                        `).join('');
+                        const html = `
+                            <div class="alert alert-info py-2 mb-3">
+                                <strong>System Status:</strong> ${data.system_status} | 
+                                <strong>Next Training:</strong> ${data.next_training}
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col">
+                                    <div class="card"><div class="card-body text-center"><strong>${data.training_data.total_samples.toLocaleString()}</strong><br><small>Total Samples</small></div></div>
+                                </div>
+                                <div class="col">
+                                    <div class="card"><div class="card-body text-center"><strong>${data.training_data.processed_today}</strong><br><small>Processed Today</small></div></div>
+                                </div>
+                                <div class="col">
+                                    <div class="card"><div class="card-body text-center"><strong>+${data.training_data.accuracy_improvement}%</strong><br><small>Accuracy Improvement</small></div></div>
+                                </div>
+                            </div>
+                            <h6>AI Models</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr><th>Model</th><th>Status</th><th>Accuracy</th><th>Last Trained</th></tr>
+                                    </thead>
+                                    <tbody>${models}</tbody>
+                                </table>
+                            </div>`;
+                        showInModal('AI Configuration', html);
+                    } catch (e) {
+                        showInModal('AI Configuration', '<div class="text-danger">Failed to load AI configuration.</div>');
+                    }
+                });
+            }
+        }
+
+        async function showUserDetails(userId) {
+            showInModal('User Details', '<div class="text-muted">Loading user details...</div>');
+            try {
+                const res = await fetch(`/api/user/${userId}`);
+                const user = await res.json();
+                
+                if (user.error) {
+                    showInModal('User Details', '<div class="text-danger">User not found.</div>');
+                    return;
+                }
+                
+                const skills = user.skills.map(skill => `<span class="badge bg-secondary me-1">${skill}</span>`).join('');
+                
+        const adminControls = (currentUser && currentUser.role === 'admin') ? `
+            <hr>
+            <h6 class="text-danger mb-2"><i class="fas fa-user-edit me-2"></i>Edit User (Admin)</h6>
+            <div class="row g-2">
+                <div class="col-6"><label class="form-label small">Full Name</label><input id="eu-name" class="form-control form-control-sm" value="${user.full_name}"></div>
+                <div class="col-6"><label class="form-label small">Email</label><input id="eu-email" class="form-control form-control-sm" value="${user.email}"></div>
+                <div class="col-4"><label class="form-label small">Role</label>
+                    <select id="eu-role" class="form-select form-select-sm">
+                        <option value="admin" ${user.role==='admin'?'selected':''}>Admin</option>
+                        <option value="tester" ${user.role==='tester'?'selected':''}>Tester</option>
+                        <option value="developer" ${user.role==='developer'?'selected':''}>Developer</option>
+                    </select>
+                </div>
+                <div class="col-4"><label class="form-label small">Department</label><input id="eu-dept" class="form-control form-control-sm" value="${user.department||''}"></div>
+                <div class="col-4"><label class="form-label small">City</label><input id="eu-city" class="form-control form-control-sm" value="${user.city||''}"></div>
+                <div class="col-12"><label class="form-label small">Address</label><input id="eu-address" class="form-control form-control-sm" value="${user.address||''}"></div>
+                <div class="col-6"><label class="form-label small">Mobile</label><input id="eu-mobile" class="form-control form-control-sm" value="${user.mobile||''}"></div>
+                <div class="col-3"><label class="form-label small">Age</label><input id="eu-age" type="number" class="form-control form-control-sm" value="${user.age||''}"></div>
+                <div class="col-3"><label class="form-label small">Active</label>
+                    <select id="eu-active" class="form-select form-select-sm">
+                        <option value="1" ${user.active? 'selected':''}>Active</option>
+                        <option value="0" ${!user.active? 'selected':''}>Inactive</option>
+                    </select>
+                </div>
+                <div class="col-12 text-end mt-2">
+                    <button class="btn btn-sm btn-primary" onclick="saveUserEdits(${user.id})"><i class="fas fa-save me-1"></i>Save Changes</button>
+                </div>
+            </div>
+        ` : '';
+
+        const html = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    ${(user.full_name || user.email).split(' ').map(n => n && n[0] ? n[0] : '').join('') || 'U'}
+                                </div>
+                                <h5 class="mt-2 mb-0">${user.full_name}</h5>
+                                <span class="badge bg-${user.role === 'admin' ? 'danger' : (user.role === 'tester' ? 'warning' : 'info')}">${user.role.toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Basic Details</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong>Full Name:</strong><br>
+                                                    <span class="text-primary">${user.full_name}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Role:</strong><br>
+                                                    <span class="badge bg-${user.role === 'admin' ? 'danger' : (user.role === 'tester' ? 'warning' : 'info')}">${user.role.toUpperCase()}</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Age:</strong><br>
+                                                    <span class="text-dark">${user.age} years</span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong>Experience:</strong><br>
+                                                    <span class="text-dark">${user.experience}</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <strong>Mobile Number:</strong><br>
+                                                    <span class="text-success"><i class="fas fa-phone me-1"></i>${user.mobile}</span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <strong>Address:</strong><br>
+                                                    <span class="text-dark"><i class="fas fa-map-marker-alt me-1"></i>${user.address}, ${user.city}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h6 class="text-secondary mb-3"><i class="fas fa-briefcase me-2"></i>Professional Details</h6>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <strong>Email:</strong><br>
+                                    <small class="text-muted">${user.email}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Department:</strong><br>
+                                    <small class="text-muted">${user.department}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Join Date:</strong><br>
+                                    <small class="text-muted">${user.join_date}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Last Login:</strong><br>
+                                    <small class="text-muted">${user.last_login}</small>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Projects:</strong><br>
+                                    <span class="badge bg-primary">${user.projects}</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Bugs Resolved:</strong><br>
+                                    <span class="badge bg-success">${user.bugs_resolved}</span>
+                                </div>
+                                <div class="col-12">
+                                    <strong>Skills:</strong><br>
+                                    ${skills}
+                                </div>
+                                <div class="col-12">
+                                    <strong>Status:</strong>
+                                    ${user.active ? '<span class="badge bg-success ms-2">ACTIVE</span>' : '<span class="badge bg-secondary ms-2">INACTIVE</span>'}
+                                </div>
+                            </div>
+                        </div>
+            </div>
+            ${adminControls}
+                `;
+                showInModal('User Details', html);
+            } catch (e) {
+                showInModal('User Details', '<div class="text-danger">Failed to load user details.</div>');
+            }
+        }
+
+        function showInModal(title, html) {
+            const modalElement = document.getElementById('dataModal');
+            const titleEl = document.getElementById('dataModalLabel');
+            const contentEl = document.getElementById('dataModalContent');
+            
+            if (titleEl && contentEl) {
+                titleEl.textContent = title;
+                contentEl.innerHTML = html;
+                
+                // Force remove any existing modal instances
+                const existingModal = bootstrap.Modal.getInstance(modalElement);
+                if (existingModal) {
+                    existingModal.dispose();
+                }
+                
+async function saveUserEdits(userId) {
+    const payload = {
+        name: document.getElementById('eu-name').value,
+        email: document.getElementById('eu-email').value,
+        role: document.getElementById('eu-role').value,
+        department: document.getElementById('eu-dept').value,
+        city: document.getElementById('eu-city').value,
+        address: document.getElementById('eu-address').value,
+        mobile: document.getElementById('eu-mobile').value,
+        age: parseInt(document.getElementById('eu-age').value || '0', 10),
+        active: document.getElementById('eu-active').value === '1' ? 1 : 0,
+    };
+    try {
+        const resp = await fetch(`/api/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (resp.ok) {
+            showInModal('Success', '<div class="text-success">User updated successfully.</div>');
+        } else {
+            showInModal('Error', '<div class="text-danger">Failed to update user.</div>');
+        }
+    } catch (_) {
+        showInModal('Error', '<div class="text-danger">Failed to update user.</div>');
+    }
+}
+
+                // Remove any backdrop elements that might be stuck
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // Remove modal-open class from body
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                // Create completely fresh modal instance
+                const modal = new bootstrap.Modal(modalElement, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+                
+                // Show the modal
+                modal.show();
+                
+                // Add event listener to properly clean up when modal is hidden
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    modal.dispose();
+                }, { once: true });
+            }
+        }
+
+        // Update sidebar based on user role
+        function updateSidebarForRole(role) {
+            const sidebar = document.querySelector('.sidebar');
+            const aiFeaturesSection = document.querySelector('.sidebar .nav-link small.text-muted');
+            
+            // Remove existing role-specific items
+            const existingRoleItems = sidebar.querySelectorAll('.role-specific');
+            existingRoleItems.forEach(item => item.remove());
+            
+            // Add role-specific menu items
+            const roleSpecificHTML = getRoleSpecificSidebarItems(role);
+            if (aiFeaturesSection && roleSpecificHTML) {
+                aiFeaturesSection.insertAdjacentHTML('afterend', roleSpecificHTML);
+            }
+        // Re-bind sidebar actions
+        bindSidebarNav();
+        }
+
+        // Get role-specific sidebar items
+        function getRoleSpecificSidebarItems(role) {
+            const roleItems = {
+                admin: `
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-users-cog me-2"></i> User Management
+                        </a>
+                    </li>
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-server me-2"></i> System Settings
+                        </a>
+                    </li>
+                `,
+                tester: `
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-vial me-2"></i> Test Cases
+                        </a>
+                    </li>
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-clipboard-list me-2"></i> Test Plans
+                        </a>
+                    </li>
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-bug me-2"></i> My Bug Reports
+                        </a>
+                    </li>
+                `,
+                developer: `
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-tasks me-2"></i> Assigned Bugs
+                        </a>
+                    </li>
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-code-branch me-2"></i> Pull Requests
+                        </a>
+                    </li>
+                    <li class="nav-item role-specific">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-clock me-2"></i> Time Tracking
+                        </a>
+                    </li>
+                `
+            };
+            
+            return roleItems[role] || '';
+        }
+
+        function initializeCharts() {
+            // Your existing chart initialization code here
+            console.log('Charts initialized with', bugs.length, 'bugs');
+        }
+
+        // Analytics Charts Functions
+        async function initializeAnalyticsCharts() {
+            try {
+                const response = await fetch('/api/analytics');
+                const data = await response.json();
+                
+                // Initialize all charts
+                createStatusBarChart(data.status_overview);
+                createSeverityPieChart(data.severity_distribution);
+                createTrendsLineChart(data.bug_trends);
+                createAssignmentChart(data.assignment_distribution);
+            } catch (error) {
+                console.error('Error loading analytics data:', error);
+            }
+        }
+
+        // Sidebar navigation behavior
+        function bindSidebarNav() {
+            const sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            // Analytics
+            const analyticsLink = Array.from(sidebar.querySelectorAll('.nav-link')).find(a => a.textContent.trim() === 'Analytics');
+            if (analyticsLink) {
+                analyticsLink.onclick = (e) => {
+                    e.preventDefault();
+                    const tabBtn = document.querySelector('#analytics-tab');
+                    if (tabBtn) {
+                        const tab = new bootstrap.Tab(tabBtn);
+                        tab.show();
+                        setTimeout(() => initializeAnalyticsCharts(), 250);
+                    }
+                };
+            }
+            // User Management (admin only)
+            const userMgmt = Array.from(sidebar.querySelectorAll('.nav-link')).find(a => a.textContent.trim() === 'Users' || a.textContent.trim() === 'User Management');
+            if (userMgmt) {
+                userMgmt.onclick = async (e) => {
+                    e.preventDefault();
+                    const usersBtn = document.getElementById('btn-users');
+                    if (usersBtn) usersBtn.click();
+                };
+            }
+            // System Settings → open settings modal
+            const sysSettings = Array.from(sidebar.querySelectorAll('.nav-link')).find(a => a.textContent.trim() === 'Settings' || a.textContent.trim() === 'System Settings');
+            if (sysSettings) {
+                sysSettings.onclick = (e) => { e.preventDefault(); openSettings(); };
+            }
+            // All Bugs → open bug reports
+            const allBugs = Array.from(sidebar.querySelectorAll('.nav-link')).find(a => a.textContent.trim() === 'All Bugs');
+            if (allBugs) {
+                allBugs.onclick = async (e) => {
+                    e.preventDefault();
+                    const anyBtn = document.getElementById('btn-bug-reports');
+                    if (anyBtn) anyBtn.click();
+                };
+            }
+            // AI Features placeholders
+            const aiItems = ['Severity Prediction', 'Duplicate Detection', 'Auto Assignment'];
+            aiItems.forEach(label => {
+                const link = Array.from(sidebar.querySelectorAll('.nav-link')).find(a => a.textContent.trim() === label);
+                if (link) {
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        showInModal(label, '<div class="text-muted">No content yet. This section is intentionally left empty.</div>');
+                    };
+                }
+            });
+        }
+
+        function createStatusBarChart(data) {
+            const ctx = document.getElementById('statusBarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Number of Bugs',
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderColor: data.colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSeverityPieChart(data) {
+            const ctx = document.getElementById('severityPieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTrendsLineChart(data) {
+            const el = document.getElementById('trendLineChart') || document.getElementById('trendsLineChart');
+            if (!el) return;
+            const ctx = el.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Bugs Reported',
+                        data: data.data,
+                        borderColor: data.color,
+                        backgroundColor: data.color + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createAssignmentChart(data) {
+            const ctx = document.getElementById('assignmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
